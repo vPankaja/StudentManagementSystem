@@ -8,6 +8,12 @@ import { getAuth } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+//Chanduni
+import AddNotice from "./components/screen/Notices/AddNotice";
+import NoticeList from "./components/screen/Notices/NoticeList";
+import UpdateNotice from './components/screen/Notices/UpdateNotice'
+
+
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
@@ -23,6 +29,11 @@ export default function App() {
           <Stack.Screen name="Add User" component={AddUser} />
           <Stack.Screen name="User List" component={UserList} />
           <Stack.Screen name="Update User" component={UpdateUser} />
+
+          {/* Chanduni */}
+          <Stack.Screen name="Add Notice" component={AddNotice} />
+          <Stack.Screen name="View Notice" component={NoticeList} />
+          <Stack.Screen name="Update Notice" component={UpdateNotice} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>
