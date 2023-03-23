@@ -13,6 +13,8 @@ import AddNotice from "./components/screen/Notices/AddNotice";
 import NoticeList from "./components/screen/Notices/NoticeList";
 import UpdateNotice from './components/screen/Notices/UpdateNotice'
 
+import AddClassSchedule from './components/screen/TimeTable/ClassSchedule'
+import ScheduleList from "./components/screen/TimeTable/ScheduleList";
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -34,6 +36,11 @@ export default function App() {
           <Stack.Screen name="Add Notice" component={AddNotice} />
           <Stack.Screen name="View Notice" component={NoticeList} />
           <Stack.Screen name="Update Notice" component={UpdateNotice} />
+
+          {/* Vishwa */}
+          <Stack.Screen name="Add ClassSchedule" component={AddClassSchedule} />
+          <Stack.Screen name="Schedule List" component={ScheduleList} />
+          
         </Stack.Navigator>
       </NavigationContainer>
     </View>
