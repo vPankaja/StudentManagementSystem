@@ -69,10 +69,12 @@ import {
                 elevation: 10,
               }}
             >
-              <Text style={styles.text}>Date : {item.day}</Text>
+              <Text style={styles.text}>Day : {item.day}</Text>
               <Text style={styles.text}>Time : {item.time}</Text>
+              <Text style={styles.text}>Duration : {item.duration}</Text>
               <Text style={styles.text}>Venue : {item.venue}</Text>
               <Text style={styles.text}>Subject : {item.subject}</Text>
+              <Text style={styles.text}>Lecturer : {item.lecturer}</Text>
               <View
                 style={{
                   flex: 1,
