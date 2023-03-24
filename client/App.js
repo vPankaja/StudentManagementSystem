@@ -7,6 +7,10 @@ import { NavigationContainer } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import AddFeedback from "./components/screen/Feedback/Addfeedback";
+import FeedbackList from "./components/screen/Feedback/FeedbackList";
+import UpdateFeedback from "./components/screen/Feedback/UpdateFeedback";
+
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -23,6 +27,10 @@ export default function App() {
           <Stack.Screen name="Add User" component={AddUser} />
           <Stack.Screen name="User List" component={UserList} />
           <Stack.Screen name="Update User" component={UpdateUser} />
+          <Stack.Screen name="Add Feedback" component={AddFeedback} />
+          <Stack.Screen name="Add Feedback List" component={FeedbackList} />
+          <Stack.Screen name="Update Feedback" component={UpdateFeedback} />
+        
         </Stack.Navigator>
       </NavigationContainer>
     </View>
