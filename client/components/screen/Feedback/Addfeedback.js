@@ -7,14 +7,14 @@ import {
   ToastAndroid,
 } from "react-native";
 import React, { useState } from "react";
-import { db } from "../firebase-config/firebase-config";
+import { db } from "../../firebase-config/firebase-config";
 import { useNavigation } from "@react-navigation/native";
 import { collection, addDoc } from "firebase/firestore";
 
-export default function LoginPage() {
+export default function AddFeedback() {
   const [data, setData] = useState("");
   const navigation = useNavigation();
-  const DatCollectinRef = collection(db, "User"); //database collection reference
+  const DatCollectinRef = collection(db, "Feedback"); //database collection reference
 
   //inputs handle function
   const handleChangeText = (name, value) => {
@@ -25,7 +25,7 @@ export default function LoginPage() {
   const add_data = async () => {
     try {
       await addDoc(DatCollectinRef, {
-        email: data.email,
+        detail: data.detail,
         name: data.name,
       });
       if (addDoc) {
@@ -51,7 +51,7 @@ export default function LoginPage() {
           textAlign: "center",
         }}
       >
-        Add information
+        Add FeedBack
       </Text>
 
       {/* user data entering form start form here */}
@@ -64,7 +64,7 @@ export default function LoginPage() {
         }}
       >
         {/* lables */}
-        <Text style={styles.text}>Email</Text>
+        <Text style={styles.text}>Details</Text>
         {/* input fields  */}
         <TextInput
           style={{
@@ -74,9 +74,9 @@ export default function LoginPage() {
             padding: 5,
             paddingLeft: 10,
           }}
-          keyboardType="email-address"
-          placeholder="enter email"
-          onChangeText={(val) => handleChangeText("email", val)}
+          keyboardType="detail"
+          placeholder="Add details"
+          onChangeText={(val) => handleChangeText("detail", val)}
         ></TextInput>
         {/* lables */}
         <Text style={styles.text}>Name</Text>
@@ -105,15 +105,6 @@ export default function LoginPage() {
           </Text>
         </TouchableOpacity>
       </View>
-    
-          onPress={() => navigation.navigate("Add Notice")}
-          underlayColor="#0084fffa"
-        >
-          <Text style={{ fontSize: 20, fontWeight: "bold", color: "#fff" }}>
-            Notice
-          </Text>
-        </TouchableOpacity>
-      </View>
       <View style={{ marginHorizontal: 15 }}>
         {/* Button */}
         <TouchableOpacity
@@ -125,30 +116,11 @@ export default function LoginPage() {
             alignItems: "center",
             borderRadius: 7,
           }}
-          onPress={() => navigation.navigate("View Notice")}
+          onPress={() => navigation.navigate("Add Feedback List")}
           underlayColor="#0084fffa"
         >
           <Text style={{ fontSize: 20, fontWeight: "bold", color: "#fff" }}>
-            Notice List
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <View style={{ marginHorizontal: 15 }}>
-        {/* Button */}
-        <TouchableOpacity
-          style={{
-            marginTop: 15,
-            backgroundColor: "#0D47A1",
-            height: 40,
-            justifyContent: "center",
-            alignItems: "center",
-            borderRadius: 7,
-          }}
-          onPress={() => navigation.navigate("Add ClassSchedule")}
-          underlayColor="#0084fffa"
-        >
-          <Text style={{ fontSize: 20, fontWeight: "bold", color: "#fff" }}>
-           Add Class Schedule
+            FeedBack List 🛒
           </Text>
         </TouchableOpacity>
       </View>
