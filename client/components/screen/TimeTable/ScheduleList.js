@@ -1,31 +1,48 @@
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
-  FlatList,
-  ToastAndroid,
   TextInput,
-  ImageBackground,
+  TouchableOpacity,
+  ToastAndroid,
+  ScrollView,
 } from "react-native";
-import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { db } from "../../firebase-config/firebase-config";
-import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
+import { Table, Row, Rows } from "react-native-table-component";
 
 export default function ScheduleList() {
   const [getData, setGetData] = useState("");
   const navigation = useNavigation();
   const DatCollectinRef = collection(db, "Class Schedule"); //firebase databse reference
   const [ignored, forceUpdate] = React.useReducer((x) => x + 1, 0); //the method for refresh functions
+  const [tableData, setTableData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredData, setFilteredData] = useState([]);
   const [originalData, setOriginalData] = useState([]);
 
   useEffect(() => {
     const getAllData = async () => {
       const data = await getDocs(DatCollectinRef);
-      setOriginalData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      setOriginalData(
+        data.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+      );
+      setTableData(
+        data.docs.map((doc) => [
+          doc.data().day,
+          doc.data().time,
+          doc.data().venue,
+          doc.data().subject,
+          doc.data().lecturer,
+          doc.id,
+        ])
+      );
       forceUpdate();
     };
     getAllData();
@@ -54,9 +71,10 @@ export default function ScheduleList() {
     );
     setFilteredData(filtered);
   };
+
+  const tableHead = ["Day", "Time", "Venue", "Subject", "Lecturer", "Actions"];
   
   return (
-    
     <View style={styles.container}>
       <View>
         <Text
@@ -87,96 +105,68 @@ export default function ScheduleList() {
             <Text style={styles.searchButtonText}>Search</Text>
           </TouchableOpacity>
         </View>
-
-        {/* store feched data in list using react native flatlist */}
-        <FlatList
-          style={{
-            margin: 5,
-            height: "95%",
-          }}
-          data={searchTerm ? filteredData : getData}
-          renderItem={({ item }) => (
-            <View
-              style={{
-                margin: 5,
-                backgroundColor: "#fff",
-                padding: 10,
-                borderRadius: 15,
-                elevation: 10,
-              }}
-            >
-              <Text style={styles.text}>Day : {item.day}</Text>
-              <Text style={styles.text}>Time : {item.time}</Text>
-              <Text style={styles.text}>Venue : {item.venue}</Text>
-              <Text style={styles.text}>Subject : {item.subject}</Text>
-              <Text style={styles.text}>Lecturer : {item.lecturer}</Text>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "flex-end",
-                }}
-              >
-                {/* update button */}
-                <TouchableOpacity
-                  style={{
-                    marginTop: 15,
-                    flex: 0.4,
-                    backgroundColor: "#0056A2",
-                    marginHorizontal: 5,
-                    height: 30,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: 10,
-                  }}
-                  activeOpacity={2}
-                  //pass data to another page using usenavigate params for update user
-                  onPress={() => navigation.navigate("Update Notice", { item })}
-                  underlayColor="#0084fffa"
-                >
-                  <Text style={{ fontSize: 15, color: "#fff" }}>Update</Text>
-                </TouchableOpacity>
-                {/* delete button */}
-                <TouchableOpacity
-                  style={{
-                    marginTop: 15,
-                    flex: 0.4,
-                    backgroundColor: "tomato",
-                    marginHorizontal: 5,
-                    height: 30,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: 10,
-                  }}
-                  activeOpacity={2}
-                  onPress={() => deleteSchedule(item.id)}
-                  underlayColor="#0084fffa"
-                >
-                  <Text style={{ fontSize: 15, color: "#fff" }}>Delete</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
-        ></FlatList>
+        <br />
+        <ScrollView horizontal={true}>
+          <View>
+            <Table borderStyle={{ borderWidth: 1, borderColor: "#C1C0B9" }}>
+              <Row
+                data={tableHead}
+                style={styles.tableHeader}
+                textStyle={styles.tableHeaderText}
+              />
+              <Rows
+                data={tableData}
+                textStyle={styles.tableText}
+                style={[
+                  styles.tableRow,
+                  { backgroundColor: "#ffffff" },
+                ]}
+              />
+            </Table>
+          </View>
+        </ScrollView>
       </View>
     </View>
   );
-  }
+}
 
 
 const styles = StyleSheet.create({
-  text: {
-    color: "#0D0140",
-    marginVertical: 5,
-    fontSize: 15,
-  },
-  button: {
-    marginTop: 15,
-    backgroundColor: "#448AFF",
-    height: 40,
+  container: {
+    flex: 1,
+    backgroundColor: "#F5FCFF",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 7,
+  },
+  tableHeader: {
+    height: 50,
+    width: 350,
+    backgroundColor: "#537791",
+  },
+  tableHeaderText: {
+    textAlign: "center",
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#fff",
+  },
+  tableRow: {
+    height: 40,
+    backgroundColor: "#EDEDED",
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderBottomColor: "#F2F2F2",
+    alignItems: "center",
+    marginHorizontal: 20,
+  },
+  tableCell: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  tableCellText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#666666",
   },
   searchInput: {
     flex: 1,

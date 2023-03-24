@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ToastAndroid,
   Picker,
+  ImageBackground,
 } from "react-native";
 import { db } from "../../firebase-config/firebase-config";
 import { useNavigation } from "@react-navigation/native";
@@ -18,6 +19,8 @@ export default function AddClassSchedule() {
   const DatCollectinRef = collection(db, "Class Schedule"); //database collection reference
   const [selectedDay, setSelectedDay] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
+
+  const backgroundImage = require("../../../assets/B_Image.jpg"); // specify the path to your image file
 
   //inputs handle function
   const handleChangeText = async (name, value) => {
@@ -41,7 +44,12 @@ export default function AddClassSchedule() {
       return;
     }
 
-    setData((prevState) => ({ ...prevState, [name]: value, day: selectedDay, time: selectedTime }));
+    setData((prevState) => ({
+      ...prevState,
+      [name]: value,
+      day: selectedDay,
+      time: selectedTime,
+    }));
   };
 
   //create user function,include firebase methods
@@ -70,79 +78,93 @@ export default function AddClassSchedule() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Add Class Schedule</Text>
-      <View
-        style={{
-          margin: 5,
-          borderBottomWidth: 1,
-          borderColor: "#BDBDBD",
-          padding: 10,
-        }}
-      >
-        <Text style={styles.text}>Day</Text>
-        <Picker
-          style={styles.input}
-          selectedValue={selectedDay}
-          onValueChange={(itemValue, itemIndex) => setSelectedDay(itemValue)}
+    <ImageBackground source={backgroundImage} style={styles.background}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Add Class Schedule</Text>
+        <View
+          style={{
+            margin: 5,
+            borderBottomWidth: 1,
+            borderColor: "#BDBDBD",
+            padding: 10,
+          }}
         >
-          <Picker.Item label="Select a Day" value="" />
-          <Picker.Item label="Monday" value="Monday" />
-          <Picker.Item label="Tuesday" value="Tuesday" />
-          <Picker.Item label="Wednesday" value="Wednesday" />
-          <Picker.Item label="Thursday" value="Thursday" />
-          <Picker.Item label="Friday" value="Friday" />
-          <Picker.Item label="Saturday" value="Saturday" />
-          <Picker.Item label="Sunday" value="Sunday" />
-        </Picker>
+          <Text style={styles.text}>Day</Text>
+          <Picker
+            style={styles.input}
+            selectedValue={selectedDay}
+            onValueChange={(itemValue, itemIndex) => setSelectedDay(itemValue)}
+          >
+            <Picker.Item label="Select a Day" value="" />
+            <Picker.Item label="Monday" value="Monday" />
+            <Picker.Item label="Tuesday" value="Tuesday" />
+            <Picker.Item label="Wednesday" value="Wednesday" />
+            <Picker.Item label="Thursday" value="Thursday" />
+            <Picker.Item label="Friday" value="Friday" />
+            <Picker.Item label="Saturday" value="Saturday" />
+            <Picker.Item label="Sunday" value="Sunday" />
+          </Picker>
 
-        <Text style={styles.text}>Time</Text>
-        <Picker
-          style={styles.input}
-          selectedValue={selectedTime}
-          onValueChange={(itemValue, itemIndex) => setSelectedTime(itemValue)}
-        >
-          <Picker.Item label="Select a Time" value="" />
-          <Picker.Item label="8.30 AM - 10.30 AM" value="8.30 AM - 10.30 AM" />
-          <Picker.Item label="9.30 AM - 11.30 AM" value="9.30 AM - 11.30 AM" />
-          <Picker.Item label="10.30 AM - 12.30 AM" value="10.30 AM - 12.30 AM" />
-          <Picker.Item label="11.30 AM - 1.30 PM" value="11.30 AM - 1.30 PM" />
-          <Picker.Item label="2.00 PM - 4.00 PM" value="2.00 PM - 4.00 PM" />
-          <Picker.Item label="3.00 PM - 5.00 PM" value="3.00 PM - 5.00 PM" />
-          <Picker.Item label="4.00 PM - 6.00 PM" value="4.00 PM - 6.00 PM" />
-          <Picker.Item label="5.00 PM - 7.00 PM" value="5.00 PM - 7.00 PM" />
-          <Picker.Item label="6.00 PM - 8.00 PM" value="6.00 PM - 8.00 PM" />
-        </Picker>
+          <Text style={styles.text}>Time</Text>
+          <Picker
+            style={styles.input}
+            selectedValue={selectedTime}
+            onValueChange={(itemValue, itemIndex) => setSelectedTime(itemValue)}
+          >
+            <Picker.Item label="Select a Time" value="" />
+            <Picker.Item
+              label="8.30 AM - 10.30 AM"
+              value="8.30 AM - 10.30 AM"
+            />
+            <Picker.Item
+              label="9.30 AM - 11.30 AM"
+              value="9.30 AM - 11.30 AM"
+            />
+            <Picker.Item
+              label="10.30 AM - 12.30 AM"
+              value="10.30 AM - 12.30 AM"
+            />
+            <Picker.Item
+              label="11.30 AM - 1.30 PM"
+              value="11.30 AM - 1.30 PM"
+            />
+            <Picker.Item label="2.00 PM - 4.00 PM" value="2.00 PM - 4.00 PM" />
+            <Picker.Item label="3.00 PM - 5.00 PM" value="3.00 PM - 5.00 PM" />
+            <Picker.Item label="4.00 PM - 6.00 PM" value="4.00 PM - 6.00 PM" />
+            <Picker.Item label="5.00 PM - 7.00 PM" value="5.00 PM - 7.00 PM" />
+            <Picker.Item label="6.00 PM - 8.00 PM" value="6.00 PM - 8.00 PM" />
+          </Picker>
 
-        <Text style={styles.text}>Venue</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter the Venue"
-          onChangeText={(val) => handleChangeText("venue", val)}
-        />
+          <Text style={styles.text}>Venue</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter the Venue"
+            onChangeText={(val) => handleChangeText("venue", val)}
+          />
 
-        <Text style={styles.text}>Subject</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter the Subject"
-          onChangeText={(val) => handleChangeText("subject", val)}
-        />
+          <Text style={styles.text}>Subject</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter the Subject"
+            onChangeText={(val) => handleChangeText("subject", val)}
+          />
 
-        <Text style={styles.text}>Lecturer</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter the lecturer's name"
-          onChangeText={(val) => handleChangeText("lecturer", val)}
-        />
-        <br />
-        <Button title="Add Class" onPress={() => add_data()} />
-        <br />
-        <Button
-          title="Schedule List"
-          onPress={() => navigation.navigate("Schedule List")}
-        />
+          <Text style={styles.text}>Lecturer</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter the lecturer's name"
+            onChangeText={(val) => handleChangeText("lecturer", val)}
+          />
+          <br />
+          <Button style={styles.btn1} title="Add Class" onPress={() => add_data()} />
+          <br />
+          <Button
+            title="Schedule List"
+            onPress={() => navigation.navigate("Schedule List")}
+          />
+        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 }
 const styles = StyleSheet.create({
@@ -151,16 +173,37 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
+    color: "yellow",
     fontWeight: "bold",
     marginBottom: 20,
   },
+  btn1:{
+    height: 40,
+    width: 150,
+  },
+  text:{
+    fontWeight: "bold",
+    color: "yellow",
+    borderColor : "white",
+  },
   input: {
     height: 40,
+    width: 250,
     borderColor: "gray",
     borderWidth: 1,
     marginBottom: 10,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 10,
+    backgroundColor: "white",
+  },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  background: {
+    flex: 1,
+    resizeMode: "cover", // stretch the image to cover the entire screen
   },
 });
