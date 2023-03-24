@@ -6,7 +6,6 @@ import {
   Button,
   StyleSheet,
   ToastAndroid,
-  TimePickerAndroid,
   Picker,
 } from "react-native";
 import { db } from "../../firebase-config/firebase-config";
@@ -18,6 +17,7 @@ export default function AddClassSchedule() {
   const navigation = useNavigation();
   const DatCollectinRef = collection(db, "Class Schedule"); //database collection reference
   const [selectedDay, setSelectedDay] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
 
   //inputs handle function
   const handleChangeText = async (name, value) => {
@@ -34,29 +34,14 @@ export default function AddClassSchedule() {
       return;
     }
 
-    if (name === "time") {
-      // If the Time input field is clicked, show the time picker
-      try {
-        const { action, hour, minute } = await TimePickerAndroid.open({
-          hour: 12,
-          minute: 0,
-          is24Hour: false,
-        });
-        if (action !== TimePickerAndroid.dismissedAction) {
-          // Set the selected time to the Time input field
-          let selectedTime = `${hour}:${minute}`;
-          setData((prevState) => ({ ...prevState, [name]: selectedTime }));
-        }
-      } catch (error) {
-        console.warn("Cannot open time picker", error);
-      }
-    } else {
-      setData((prevState) => ({
-        ...prevState,
-        [name]: value,
-        day: selectedDay,
-      }));
+    // Validate the selectedDay value
+    if (name === "time" && value === "") {
+      // If the time slot is not selected, show an error message
+      ToastAndroid.show("Please select a time.", ToastAndroid.SHORT);
+      return;
     }
+
+    setData((prevState) => ({ ...prevState, [name]: value, day: selectedDay, time: selectedTime }));
   };
 
   //create user function,include firebase methods
@@ -65,7 +50,6 @@ export default function AddClassSchedule() {
       await addDoc(DatCollectinRef, {
         day: data.day,
         time: data.time,
-        duration: data.duration,
         venue: data.venue,
         subject: data.subject,
         lecturer: data.lecturer,
@@ -113,20 +97,22 @@ export default function AddClassSchedule() {
         </Picker>
 
         <Text style={styles.text}>Time</Text>
-        <TextInput
+        <Picker
           style={styles.input}
-          placeholder="Select the Time"
-          editable={false}
-          value={data.time}
-          onTouchStart={() => handleChangeText("time")}
-        />
-
-        <Text style={styles.text}>Duration</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter the Duration"
-          onChangeText={(val) => handleChangeText("duration", val)}
-        />
+          selectedValue={selectedTime}
+          onValueChange={(itemValue, itemIndex) => setSelectedTime(itemValue)}
+        >
+          <Picker.Item label="Select a Time" value="" />
+          <Picker.Item label="8.30 AM - 10.30 AM" value="8.30 AM - 10.30 AM" />
+          <Picker.Item label="9.30 AM - 11.30 AM" value="9.30 AM - 11.30 AM" />
+          <Picker.Item label="10.30 AM - 12.30 AM" value="10.30 AM - 12.30 AM" />
+          <Picker.Item label="11.30 AM - 1.30 PM" value="11.30 AM - 1.30 PM" />
+          <Picker.Item label="2.00 PM - 4.00 PM" value="2.00 PM - 4.00 PM" />
+          <Picker.Item label="3.00 PM - 5.00 PM" value="3.00 PM - 5.00 PM" />
+          <Picker.Item label="4.00 PM - 6.00 PM" value="4.00 PM - 6.00 PM" />
+          <Picker.Item label="5.00 PM - 7.00 PM" value="5.00 PM - 7.00 PM" />
+          <Picker.Item label="6.00 PM - 8.00 PM" value="6.00 PM - 8.00 PM" />
+        </Picker>
 
         <Text style={styles.text}>Venue</Text>
         <TextInput

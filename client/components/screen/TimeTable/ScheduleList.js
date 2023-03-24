@@ -1,45 +1,63 @@
 import {
-    StyleSheet,
-    Text,
-    View,
-    TouchableOpacity,
-    FlatList,
-    ToastAndroid,
-  } from "react-native";
-  import React, { useState, useEffect } from "react";
-  import { useNavigation } from "@react-navigation/native";
-  import { db } from "../../firebase-config/firebase-config";
-  import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
-  
-  export default function ScheduleList() {
-    const [getData, setGetData] = useState("");
-    const navigation = useNavigation();
-    const DatCollectinRef = collection(db, "Class Schedule"); //firebase databse reference
-    const [ignored, forceUpdate] = React.useReducer((x) => x + 1, 0); //the method for refresh functions
-  
-    useEffect(() => {
-      //fetch the all data from firebase and set it to usestate, this firebase method
-      const getAllData = async () => {
-        const data = await getDocs(DatCollectinRef);
-        setGetData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-        forceUpdate();
-      };
-      getAllData();
-    }, [ignored]);
-  
-    //delete Schedules from database
-    const deleteSchedule = async (id) => {
-      try {
-        const UserDoc = doc(db, "Class Schedule", id);
-        await deleteDoc(UserDoc);
-      } catch (e) {
-        console.error("Error adding document: ", e);
-      }
-      ToastAndroid.show("Class Schedule Successfully Deleted!", ToastAndroid.SHORT);
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  FlatList,
+  ToastAndroid,
+  TextInput,
+  ImageBackground,
+} from "react-native";
+import React, { useState, useEffect } from "react";
+import { useNavigation } from "@react-navigation/native";
+import { db } from "../../firebase-config/firebase-config";
+import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+
+export default function ScheduleList() {
+  const [getData, setGetData] = useState("");
+  const navigation = useNavigation();
+  const DatCollectinRef = collection(db, "Class Schedule"); //firebase databse reference
+  const [ignored, forceUpdate] = React.useReducer((x) => x + 1, 0); //the method for refresh functions
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+  const [originalData, setOriginalData] = useState([]);
+
+  useEffect(() => {
+    const getAllData = async () => {
+      const data = await getDocs(DatCollectinRef);
+      setOriginalData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
       forceUpdate();
     };
+    getAllData();
+  }, [ignored]);
+
+  //delete Schedules from database
+  const deleteSchedule = async (id) => {
+    try {
+      const UserDoc = doc(db, "Class Schedule", id);
+      await deleteDoc(UserDoc);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
+    ToastAndroid.show(
+      "Class Schedule Successfully Deleted!",
+      ToastAndroid.SHORT
+    );
+    forceUpdate();
+  };
+
+  const handleSearch = () => {
+    const filtered = originalData.filter(
+      (item) =>
+        item.day.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.subject.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredData(filtered);
+  };
   
-    return (
+  return (
+    
+    <View style={styles.container}>
       <View>
         <Text
           style={{
@@ -52,13 +70,31 @@ import {
         >
           Class Schedule List
         </Text>
+        <br />
+        <View style={{ flexDirection: "row", marginHorizontal: 10 }}>
+          <TextInput
+            style={styles.searchInput}
+            onChangeText={(text) => setSearchTerm(text)}
+            value={searchTerm}
+            placeholder="Search by day or subject"
+            placeholderTextColor="#666"
+          />
+          <TouchableOpacity
+            style={styles.searchButton}
+            onPress={() => handleSearch()}
+            underlayColor="#0084fffa"
+          >
+            <Text style={styles.searchButtonText}>Search</Text>
+          </TouchableOpacity>
+        </View>
+
         {/* store feched data in list using react native flatlist */}
         <FlatList
           style={{
             margin: 5,
             height: "95%",
           }}
-          data={getData}
+          data={searchTerm ? filteredData : getData}
           renderItem={({ item }) => (
             <View
               style={{
@@ -71,7 +107,6 @@ import {
             >
               <Text style={styles.text}>Day : {item.day}</Text>
               <Text style={styles.text}>Time : {item.time}</Text>
-              <Text style={styles.text}>Duration : {item.duration}</Text>
               <Text style={styles.text}>Venue : {item.venue}</Text>
               <Text style={styles.text}>Subject : {item.subject}</Text>
               <Text style={styles.text}>Lecturer : {item.lecturer}</Text>
@@ -124,22 +159,44 @@ import {
           )}
         ></FlatList>
       </View>
-    );
+    </View>
+  );
   }
-  
-  const styles = StyleSheet.create({
-    text: {
-      color: "#0D0140",
-      marginVertical: 5,
-      fontSize: 15,
-    },
-    button: {
-      marginTop: 15,
-      backgroundColor: "#448AFF",
-      height: 40,
-      justifyContent: "center",
-      alignItems: "center",
-      borderRadius: 7,
-    },
-  });
-  
+
+
+const styles = StyleSheet.create({
+  text: {
+    color: "#0D0140",
+    marginVertical: 5,
+    fontSize: 15,
+  },
+  button: {
+    marginTop: 15,
+    backgroundColor: "#448AFF",
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 7,
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 7,
+    paddingHorizontal: 10,
+    marginRight: 10,
+  },
+  searchButton: {
+    backgroundColor: "#0056A2",
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 7,
+    paddingHorizontal: 10,
+  },
+  searchButtonText: {
+    color: "#fff",
+    fontSize: 15,
+  },
+});
