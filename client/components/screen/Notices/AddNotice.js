@@ -7,14 +7,14 @@ import {
   ToastAndroid,
 } from "react-native";
 import React, { useState } from "react";
-import { db } from "../firebase-config/firebase-config";
+import { db } from "../../firebase-config/firebase-config";
 import { useNavigation } from "@react-navigation/native";
 import { collection, addDoc } from "firebase/firestore";
 
-export default function LoginPage() {
+export default function AdddNotice() {
   const [data, setData] = useState("");
   const navigation = useNavigation();
-  const DatCollectinRef = collection(db, "User"); //database collection reference
+  const DatCollectinRef = collection(db, "Notice"); //database collection reference
 
   //inputs handle function
   const handleChangeText = (name, value) => {
@@ -25,8 +25,9 @@ export default function LoginPage() {
   const add_data = async () => {
     try {
       await addDoc(DatCollectinRef, {
-        email: data.email,
+        heading: data.heading,
         name: data.name,
+        date: data.date,
       });
       if (addDoc) {
         ToastAndroid.show("successfully submited!", ToastAndroid.SHORT); //application toast message
@@ -51,7 +52,7 @@ export default function LoginPage() {
           textAlign: "center",
         }}
       >
-        Add information
+        Add Notice
       </Text>
 
       {/* user data entering form start form here */}
@@ -64,7 +65,7 @@ export default function LoginPage() {
         }}
       >
         {/* lables */}
-        <Text style={styles.text}>Email</Text>
+        <Text style={styles.text}>Heading</Text>
         {/* input fields  */}
         <TextInput
           style={{
@@ -75,11 +76,11 @@ export default function LoginPage() {
             paddingLeft: 10,
           }}
           keyboardType="email-address"
-          placeholder="enter email"
-          onChangeText={(val) => handleChangeText("email", val)}
+          placeholder="enter heading"
+          onChangeText={(val) => handleChangeText("heading", val)}
         ></TextInput>
         {/* lables */}
-        <Text style={styles.text}>Name</Text>
+        <Text style={styles.text}>Body</Text>
         {/* input fields  */}
         <TextInput
           style={{
@@ -91,6 +92,19 @@ export default function LoginPage() {
           }}
           placeholder="enter name"
           onChangeText={(val) => handleChangeText("name", val)}
+        ></TextInput>
+
+        <Text style={styles.text}>Date</Text>
+        <TextInput
+          style={{
+            borderColor: "#67afff",
+            borderWidth: 1.5,
+            borderRadius: 10,
+            padding: 5,
+            paddingLeft: 10,
+          }}
+          placeholder="enter date"
+          onChangeText={(val) => handleChangeText("date", val)}
         ></TextInput>
 
         {/* submit button */}
@@ -105,15 +119,6 @@ export default function LoginPage() {
           </Text>
         </TouchableOpacity>
       </View>
-    
-          onPress={() => navigation.navigate("Add Notice")}
-          underlayColor="#0084fffa"
-        >
-          <Text style={{ fontSize: 20, fontWeight: "bold", color: "#fff" }}>
-            Notice
-          </Text>
-        </TouchableOpacity>
-      </View>
       <View style={{ marginHorizontal: 15 }}>
         {/* Button */}
         <TouchableOpacity
@@ -125,30 +130,11 @@ export default function LoginPage() {
             alignItems: "center",
             borderRadius: 7,
           }}
-          onPress={() => navigation.navigate("View Notice")}
+          onPress={() => navigation.navigate("User List")}
           underlayColor="#0084fffa"
         >
           <Text style={{ fontSize: 20, fontWeight: "bold", color: "#fff" }}>
-            Notice List
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <View style={{ marginHorizontal: 15 }}>
-        {/* Button */}
-        <TouchableOpacity
-          style={{
-            marginTop: 15,
-            backgroundColor: "#0D47A1",
-            height: 40,
-            justifyContent: "center",
-            alignItems: "center",
-            borderRadius: 7,
-          }}
-          onPress={() => navigation.navigate("Add ClassSchedule")}
-          underlayColor="#0084fffa"
-        >
-          <Text style={{ fontSize: 20, fontWeight: "bold", color: "#fff" }}>
-           Add Class Schedule
+            List 🛒
           </Text>
         </TouchableOpacity>
       </View>
