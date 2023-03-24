@@ -12,6 +12,15 @@ import FeedbackList from "./components/screen/Feedback/FeedbackList";
 import UpdateFeedback from "./components/screen/Feedback/UpdateFeedback";
 
 
+//Chanduni
+import AddNotice from "./components/screen/Notices/AddNotice";
+import NoticeList from "./components/screen/Notices/NoticeList";
+import UpdateNotice from './components/screen/Notices/UpdateNotice'
+
+import AddClassSchedule from './components/screen/TimeTable/ClassSchedule'
+import ScheduleList from "./components/screen/TimeTable/ScheduleList";
+import UpdateSchedule from "./components/screen/TimeTable/UpdateSchedule";
+
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
@@ -27,10 +36,21 @@ export default function App() {
           <Stack.Screen name="Add User" component={AddUser} />
           <Stack.Screen name="User List" component={UserList} />
           <Stack.Screen name="Update User" component={UpdateUser} />
-          <Stack.Screen name="Add Feedback" component={AddFeedback} />
-          <Stack.Screen name="Add Feedback List" component={FeedbackList} />
-          <Stack.Screen name="Update Feedback" component={UpdateFeedback} />
+     
         
+
+
+          {/* Chanduni */}
+          <Stack.Screen name="Add Notice" component={AddNotice} />
+          <Stack.Screen name="View Notice" component={NoticeList} />
+          <Stack.Screen name="Update Notice" component={UpdateNotice} />
+
+          {/* Vishwa */}
+          <Stack.Screen name="Add ClassSchedule" component={AddClassSchedule} />
+          <Stack.Screen name="Schedule List" component={ScheduleList} />
+          <Stack.Screen name="Update Schedule" component={UpdateSchedule} />
+
+
         </Stack.Navigator>
       </NavigationContainer>
     </View>
