@@ -10,6 +10,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AddFeedback from "./components/screen/Feedback/Addfeedback";
 import FeedbackList from "./components/screen/Feedback/FeedbackList";
 import UpdateFeedback from "./components/screen/Feedback/UpdateFeedback";
+import Home from "./components/screen/Home"
 
 
 //Chanduni
@@ -49,6 +50,12 @@ export default function App() {
           <Stack.Screen name="Add ClassSchedule" component={AddClassSchedule} />
           <Stack.Screen name="Schedule List" component={ScheduleList} />
           <Stack.Screen name="Update Schedule" component={UpdateSchedule} />
+
+           {/* Nipuna */}
+           <Stack.Screen name="Add Feedback" component={AddFeedback} />
+          <Stack.Screen name="Feedback List" component={FeedbackList} />
+          <Stack.Screen name="Update Feedback" component={UpdateFeedback} />
+          <Stack.Screen name="Home" component={Home} />
 
 
         </Stack.Navigator>
