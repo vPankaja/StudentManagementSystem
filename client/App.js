@@ -7,6 +7,11 @@ import { NavigationContainer } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import AddFeedback from "./components/screen/Feedback/Addfeedback";
+import FeedbackList from "./components/screen/Feedback/FeedbackList";
+import UpdateFeedback from "./components/screen/Feedback/UpdateFeedback";
+import Home from "./components/screen/Home"
+
 
 //Chanduni
 import AddNotice from "./components/screen/Notices/AddNotice";
@@ -33,6 +38,9 @@ export default function App() {
           <Stack.Screen name="Add User" component={AddUser} />
           <Stack.Screen name="User List" component={UserList} />
           <Stack.Screen name="Update User" component={UpdateUser} />
+     
+        
+
 
           {/* Chanduni */}
           <Stack.Screen name="Add Notice" component={AddNotice} />
@@ -43,7 +51,18 @@ export default function App() {
           <Stack.Screen name="Add ClassSchedule" component={AddClassSchedule} />
           <Stack.Screen name="Schedule List" component={ScheduleList} />
           <Stack.Screen name="Update Schedule" component={UpdateSchedule} />
+
           <Stack.Screen name="Login" component={Login} />
+
+
+           {/* Nipuna */}
+           <Stack.Screen name="Add Feedback" component={AddFeedback} />
+          <Stack.Screen name="Feedback List" component={FeedbackList} />
+          <Stack.Screen name="Update Feedback" component={UpdateFeedback} />
+          <Stack.Screen name="Home" component={Home} />
+
+
+
         </Stack.Navigator>
       </NavigationContainer>
     </View>
