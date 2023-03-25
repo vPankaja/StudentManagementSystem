@@ -44,7 +44,7 @@
 
     "react-native-toast-message": "^2.1.6",
     "react-native-web": "~0.18.7",
-    "validate-form-in-expo-style": "^1.0.9"
+    "validate-form-in-expo-style": "^1.0.9",
 
     "react-native-web": "~0.18.7",
     "react-router-dom": "^6.9.0",
