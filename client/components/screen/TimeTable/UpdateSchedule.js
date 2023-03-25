@@ -3,9 +3,10 @@ import {
   Text,
   View,
   TextInput,
-  TouchableOpacity,
-  ToastAndroid,
+  Button,
+  Picker,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import React, { useState, useEffect } from "react";
 import { db } from "../../firebase-config/firebase-config";
 import { useNavigation } from "@react-navigation/native";
@@ -14,27 +15,29 @@ import {
   getDocs,
   updateDoc,
   getDoc,
-  deleteDoc,
   doc,
+  query,
+  where,
 } from "firebase/firestore";
 
 export default function UpdateSchedule({ route }) {
   const { item } = route.params;
+  const DatCollectinRef = collection(db, "Class Schedule"); //database collection reference
   const id = item.id;
   const [data, setData] = useState("");
   const navigation = useNavigation();
   const initialState = {
-    day: "",
-    time: "",
-    venue: "",
-    module: "",
-    lecturer: "",
+    selectedDay: "",
+    selectedTime: "",
+    Venue: "",
+    Module: "",
+    Lecturer: "",
   };
 
   useEffect(() => {
-    const updatemember = async () => {
+    const UpdateSchedule = async () => {
       try {
-        const docRef = await getDoc(doc(db, "Notice", id));
+        const docRef = await getDoc(doc(db, "Class Schedule", id));
         // console.log("Document update data:", docRef.data());
         setData({ ...docRef.data(), id: docRef.id });
       } catch (e) {
@@ -42,45 +45,114 @@ export default function UpdateSchedule({ route }) {
       }
     };
 
-    updatemember();
+    UpdateSchedule();
   }, []);
 
   const handleChangeText = (name, value) => {
     setData((prevState) => ({ ...prevState, [name]: value }));
   };
 
-  const UpdateSchedule = async () => {
+  const handleSubmit = async () => {
     try {
+      if (data.selectedDay.trim() === "") {
+        // If the day is not selected, show an error message
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Day cant be empty !",
+        });
+        return;
+      }
+
+      if (data.selectedTime.trim() === "") {
+        // If the time slot is not selected, show an error message
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Time cant be empty !",
+        });
+        return;
+      }
+
+      if (data.Module.trim() === "") {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Module cant be empty !",
+        });
+        return;
+      }
+
+      if (data.Venue.trim() === "") {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Venue cant be empty !",
+        });
+        return;
+      }
+
+      if (data.Lecturer.trim() === "") {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Lecturer cant be empty !",
+        });
+        return;
+      }
+
+      // Check if the selected time slot has already been selected for the given day
+      if (data.selectedTime.trim() !== "" && data.selectedDay !== "") {
+        const snapshot = await getDocs(
+          query(
+            DatCollectinRef,
+            where("selectedDay", "==", data.selectedDay),
+            where("selectedTime", "==", data.selectedTime)
+          )
+        );
+        if (snapshot.docs.length !== 0) {
+          // If the selected time slot has already been selected for the given day, show an error message
+          Toast.show({
+            type: "error",
+            text1: "Error",
+            text2: `A class has already been scheduled for ${data.selectedDay} at ${data.selectedTime}.`,
+          });
+          return;
+        }
+      }
+
       await updateDoc(doc(db, "Class Schedule", id), {
-        day: data.day,
-        time: data.time,
-        venue: data.venue,
-        module: data.module,
-        lecturer: data.lecturer,
+        selectedDay: data.selectedDay,
+        selectedTime: data.selectedTime,
+        Venue: data.Venue,
+        Module: data.Module,
+        Lecturer: data.Lecturer,
       });
       if (updateDoc) {
-        ToastAndroid.show(
-          "Class Schedule Updated Successfully!",
-          ToastAndroid.SHORT
-        );
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: "Class Schedule Updated Successfully!",
+        });
         navigation.navigate("Schedule List");
       }
-    } catch (e) {
-      console.error("Error adding document: ", e);
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      alert(errorCode, errorMessage);
+    } catch {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "An Error occurred while updating the class schedule!",
+      });
     }
   };
 
   return (
-    <View style={{ flex: 1, top: 20 }}>
+    <View style={styles.container}>
       <Text
         style={{
-          color: "#0D0140",
+          color: "black",
           fontWeight: "bold",
-          fontSize: 20,
-          marginTop: 30,
+          fontSize: 30,
+          marginTop: 20,
           textAlign: "center",
         }}
       >
@@ -94,12 +166,11 @@ export default function UpdateSchedule({ route }) {
           padding: 10,
         }}
       >
-
         <Text style={styles.text}>Day</Text>
         <Picker
           style={styles.input}
           selectedValue={data.selectedDay}
-          onValueChange={(itemValue, itemIndex) => setSelectedDay(itemValue)}
+          onValueChange={(val) => handleChangeText("selectedDay", val)}
         >
           <Picker.Item label="Select a Day" value="" />
           <Picker.Item label="Monday" value="Monday" />
@@ -115,72 +186,85 @@ export default function UpdateSchedule({ route }) {
         <Picker
           style={styles.input}
           selectedValue={data.selectedTime}
-          onValueChange={(itemValue, itemIndex) => setSelectedTime(itemValue)}
+          onValueChange={(val) => handleChangeText("selectedTime", val)}
         >
           <Picker.Item label="Select a Time" value="" />
           <Picker.Item label="8.30 AM - 10.30 AM" value="8.30 AM - 10.30 AM" />
-          <Picker.Item label="9.30 AM - 11.30 AM" value="9.30 AM - 11.30 AM" />
-          <Picker.Item label="10.30 AM - 12.30 AM" value="10.30 AM - 12.30 AM" />
-          <Picker.Item label="11.30 AM - 1.30 PM" value="11.30 AM - 1.30 PM" />
-          <Picker.Item label="2.00 PM - 4.00 PM" value="2.00 PM - 4.00 PM" />
+          <Picker.Item
+            label="10.30 AM - 12.30 AM"
+            value="10.30 AM - 12.30 AM"
+          />
+          <Picker.Item label="1.00 PM - 3.00 PM" value="1.00 PM - 3.00 PM" />
           <Picker.Item label="3.00 PM - 5.00 PM" value="3.00 PM - 5.00 PM" />
-          <Picker.Item label="4.00 PM - 6.00 PM" value="4.00 PM - 6.00 PM" />
           <Picker.Item label="5.00 PM - 7.00 PM" value="5.00 PM - 7.00 PM" />
-          <Picker.Item label="6.00 PM - 8.00 PM" value="6.00 PM - 8.00 PM" />
         </Picker>
 
         <Text style={styles.text}>Venue</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter the Venue"
-          value={data.venue}
-          onChangeText={(val) => handleChangeText("venue", val)}
+          value={data.Venue}
+          onChangeText={(val) => handleChangeText("Venue", val)}
         />
 
         <Text style={styles.text}>Module</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter the Module"
-          value={data.module}
-          onChangeText={(val) => handleChangeText("module", val)}
+          value={data.Module}
+          onChangeText={(val) => handleChangeText("Module", val)}
         />
 
         <Text style={styles.text}>Lecturer</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter the lecturer's name"
-          value={data.lecturer}
-          onChangeText={(val) => handleChangeText("lecturer", val)}
+          value={data.Lecturer}
+          onChangeText={(val) => handleChangeText("Lecturer", val)}
         />
-        
-        <TouchableOpacity
-          style={styles.button}
-          activeOpacity={2}
-          onPress={() => UpdateSchedule()}
-          underlayColor="#0084fffa"
-        >
-          <Text style={{ fontSize: 20, fontWeight: "bold", color: "#fff" }}>
-            Update
-          </Text>
-        </TouchableOpacity>
+        <br />
+        <Button
+          style={styles.btn1}
+          title="Update"
+          onPress={() => handleSubmit()}
+        />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  text: {
-    color: "#0D0140",
-    marginVertical: 5,
-    fontWeight: "bold",
-    fontSize: 15,
+  container: {
+    padding: 20,
   },
-  button: {
-    marginTop: 15,
-    backgroundColor: "#448AFF",
+  btn1: {
     height: 40,
+    width: 150,
+  },
+  text: {
+    fontWeight: "bold",
+    color: "black",
+    borderColor: "white",
+  },
+  input: {
+    height: 40,
+    width: 250,
+    borderColor: "gray",
+    borderWidth: 1,
+    marginBottom: 10,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 7,
+    paddingHorizontal: 10,
+    backgroundColor: "white",
+  },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  background: {
+    flex: 1,
+    resizeMode: "cover", // stretch the image to cover the entire screen
+    tintColor: "white",
   },
 });
