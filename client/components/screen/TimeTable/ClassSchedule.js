@@ -11,7 +11,7 @@ import {
 import Toast from "react-native-toast-message";
 import { db } from "../../firebase-config/firebase-config";
 import { useNavigation } from "@react-navigation/native";
-import { collection, addDoc, getDocs, query,where,} from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
 
 export default function AddClassSchedule() {
   const [data, setData] = useState("");
@@ -79,24 +79,24 @@ export default function AddClassSchedule() {
       const snapshot = await getDocs(
         query(
           DatCollectinRef,
-          where("day", "==", selectedDay),
-          where("time", "==", selectedTime)
+          where("selectedDay", "==", selectedDay),
+          where("selectedTime", "==", selectedTime)
         )
       );
-      if (!isEmpty(snapshot.docs)) {
+      if (snapshot.docs.length !== 0) {
         // If the selected time slot has already been selected for the given day, show an error message
         Toast.show({
           type: "error",
           text1: "Error",
-          text2: `A class has already been scheduled for ${selectedDay} at ${value}.`,
+          text2: `A class has already been scheduled for ${selectedDay} at ${selectedTime}.`,
         });
         return;
       }
-}
+    }
 
     await addDoc(DatCollectinRef, {
-      day: selectedDay,
-      time: selectedTime,
+      selectedDay,
+      selectedTime,
       Venue,
       Module,
       Lecturer,
@@ -119,7 +119,17 @@ export default function AddClassSchedule() {
   return (
     <ImageBackground source={backgroundImage} style={styles.background}>
       <View style={styles.container}>
-        <Text style={styles.title}>Add Class Schedule</Text>
+        <Text
+          style={{
+            color: "yellow",
+            fontWeight: "bold",
+            fontSize: 30,
+            marginTop: 20,
+            textAlign: "center",
+          }}
+        >
+          Add Class Schedule
+        </Text>
         <View
           style={{
             margin: 5,
@@ -168,21 +178,21 @@ export default function AddClassSchedule() {
           <TextInput
             style={styles.input}
             placeholder="Enter the Venue"
-            onChangeText={text => setVenue(text)}
+            onChangeText={(text) => setVenue(text)}
           />
 
           <Text style={styles.text}>Module</Text>
           <TextInput
             style={styles.input}
             placeholder="Enter the Module"
-            onChangeText={text => setModule(text)}
+            onChangeText={(text) => setModule(text)}
           />
 
           <Text style={styles.text}>Lecturer</Text>
           <TextInput
             style={styles.input}
             placeholder="Enter the Lecturer's name"
-            onChangeText={text => setLecturer(text)}
+            onChangeText={(text) => setLecturer(text)}
           />
           <br />
           <Button
@@ -204,12 +214,6 @@ export default function AddClassSchedule() {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-  },
-  title: {
-    fontSize: 20,
-    color: "yellow",
-    fontWeight: "bold",
-    marginBottom: 20,
   },
   btn1: {
     height: 40,

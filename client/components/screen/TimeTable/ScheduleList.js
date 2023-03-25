@@ -1,14 +1,14 @@
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
   FlatList,
-  ToastAndroid,
   TextInput,
   ImageBackground,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import { db } from "../../firebase-config/firebase-config";
 import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
@@ -34,29 +34,37 @@ export default function ScheduleList() {
   //delete Schedules from database
   const deleteSchedule = async (id) => {
     try {
-      const UserDoc = doc(db, "Class Schedule", id);
-      await deleteDoc(UserDoc);
+      const ScheduleDoc = doc(db, "Class Schedule", id);
+      await deleteDoc(ScheduleDoc);
     } catch (e) {
       console.error("Error adding document: ", e);
     }
-    ToastAndroid.show(
-      "Class Schedule Successfully Deleted!",
-      ToastAndroid.SHORT
-    );
+    Toast.show({
+      type: "success",
+      text1: "Success",
+      text2: "Class Schedule Successfully Deleted!",
+    });
     forceUpdate();
   };
 
   const handleSearch = () => {
     const filtered = originalData.filter(
       (item) =>
-        item.day.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.module.toLowerCase().includes(searchTerm.toLowerCase())
+        item.selectedDay.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.Module.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    setFilteredData(filtered);
+  
+    const sorted = filtered.sort((a, b) => {
+      const aTime = parseInt(a.selectedTime.split(":").join(""));
+      const bTime = parseInt(b.selectedTime.split(":").join(""));
+      return aTime - bTime;
+    });
+  
+    setFilteredData(sorted);
   };
   
+
   return (
-    
     <View style={styles.container}>
       <View>
         <Text
@@ -105,11 +113,11 @@ export default function ScheduleList() {
                 elevation: 10,
               }}
             >
-              <Text style={styles.text}>Day : {item.day}</Text>
-              <Text style={styles.text}>Time : {item.time}</Text>
-              <Text style={styles.text}>Venue : {item.venue}</Text>
-              <Text style={styles.text}>Module : {item.module}</Text>
-              <Text style={styles.text}>Lecturer : {item.lecturer}</Text>
+              <Text style={styles.text}>Day : {item.selectedDay}</Text>
+              <Text style={styles.text}>Time : {item.selectedTime}</Text>
+              <Text style={styles.text}>Venue : {item.Venue}</Text>
+              <Text style={styles.text}>Module : {item.Module}</Text>
+              <Text style={styles.text}>Lecturer : {item.Lecturer}</Text>
               <View
                 style={{
                   flex: 1,
@@ -131,7 +139,9 @@ export default function ScheduleList() {
                   }}
                   activeOpacity={2}
                   //pass data to another page using usenavigate params for update user
-                  onPress={() => navigation.navigate("Update Schedule", { item })}
+                  onPress={() =>
+                    navigation.navigate("Update Schedule", { item })
+                  }
                   underlayColor="#0084fffa"
                 >
                   <Text style={{ fontSize: 15, color: "#fff" }}>Update</Text>
@@ -159,10 +169,10 @@ export default function ScheduleList() {
           )}
         ></FlatList>
       </View>
+      <Toast />
     </View>
   );
-  }
-
+}
 
 const styles = StyleSheet.create({
   text: {
