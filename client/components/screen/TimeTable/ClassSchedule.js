@@ -5,16 +5,19 @@ import {
   TextInput,
   Button,
   StyleSheet,
-  ToastAndroid,
   Picker,
   ImageBackground,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import { db } from "../../firebase-config/firebase-config";
 import { useNavigation } from "@react-navigation/native";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, query,where,} from "firebase/firestore";
 
 export default function AddClassSchedule() {
   const [data, setData] = useState("");
+  const [Venue, setVenue] = useState("");
+  const [Module, setModule] = useState("");
+  const [Lecturer, setLecturer] = useState("");
   const navigation = useNavigation();
   const DatCollectinRef = collection(db, "Class Schedule"); //database collection reference
   const [selectedDay, setSelectedDay] = useState("");
@@ -22,58 +25,94 @@ export default function AddClassSchedule() {
 
   const backgroundImage = require("../../../assets/B_Image.jpg"); // specify the path to your image file
 
-  //inputs handle function
-  const handleChangeText = async (name, value) => {
-    if (name === "subject" && value.trim() === "") {
-      // If the subject field is empty, show an error message
-      ToastAndroid.show("Please enter a subject.", ToastAndroid.SHORT);
-      return;
-    }
-
-    // Validate the selectedDay value
-    if (name === "day" && value === "") {
+  //create user function,include firebase methods
+  const handleSubmit = async () => {
+    if (selectedDay.trim() === "") {
       // If the day is not selected, show an error message
-      ToastAndroid.show("Please select a day.", ToastAndroid.SHORT);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Day cant be empty !",
+      });
       return;
     }
 
-    // Validate the selectedDay value
-    if (name === "time" && value === "") {
+    if (selectedTime.trim() === "") {
       // If the time slot is not selected, show an error message
-      ToastAndroid.show("Please select a time.", ToastAndroid.SHORT);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Time cant be empty !",
+      });
       return;
     }
 
-    setData((prevState) => ({
-      ...prevState,
-      [name]: value,
+    if (Module.trim() === "") {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Module cant be empty !",
+      });
+      return;
+    }
+
+    if (Venue.trim() === "") {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Venue cant be empty !",
+      });
+      return;
+    }
+
+    if (Lecturer.trim() === "") {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Lecturer cant be empty !",
+      });
+      return;
+    }
+
+    // Check if the selected time slot has already been selected for the given day
+    if (selectedTime.trim() !== "" && selectedDay !== "") {
+      const snapshot = await getDocs(
+        query(
+          DatCollectinRef,
+          where("day", "==", selectedDay),
+          where("time", "==", selectedTime)
+        )
+      );
+      if (!isEmpty(snapshot.docs)) {
+        // If the selected time slot has already been selected for the given day, show an error message
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: `A class has already been scheduled for ${selectedDay} at ${value}.`,
+        });
+        return;
+      }
+}
+
+    await addDoc(DatCollectinRef, {
       day: selectedDay,
       time: selectedTime,
-    }));
-  };
-
-  //create user function,include firebase methods
-  const add_data = async () => {
-    try {
-      await addDoc(DatCollectinRef, {
-        day: data.day,
-        time: data.time,
-        venue: data.venue,
-        subject: data.subject,
-        lecturer: data.lecturer,
+      Venue,
+      Module,
+      Lecturer,
+    });
+    if (addDoc) {
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "Class Schedule Successfully submitted!",
+      }); //application toast message
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Error adding Class Schedule !",
       });
-      if (addDoc) {
-        ToastAndroid.show(
-          "Class Schedule Successfully submited!",
-          ToastAndroid.SHORT
-        ); //application toast message
-      }
-    } catch (e) {
-      //error handling
-      console.error("Error adding document: ", e);
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      alert(errorCode, errorMessage);
     }
   };
 
@@ -93,7 +132,7 @@ export default function AddClassSchedule() {
           <Picker
             style={styles.input}
             selectedValue={selectedDay}
-            onValueChange={(itemValue, itemIndex) => setSelectedDay(itemValue)}
+            onValueChange={(itemValue) => setSelectedDay(itemValue)}
           >
             <Picker.Item label="Select a Day" value="" />
             <Picker.Item label="Monday" value="Monday" />
@@ -109,7 +148,7 @@ export default function AddClassSchedule() {
           <Picker
             style={styles.input}
             selectedValue={selectedTime}
-            onValueChange={(itemValue, itemIndex) => setSelectedTime(itemValue)}
+            onValueChange={(itemValue) => setSelectedTime(itemValue)}
           >
             <Picker.Item label="Select a Time" value="" />
             <Picker.Item
@@ -117,46 +156,40 @@ export default function AddClassSchedule() {
               value="8.30 AM - 10.30 AM"
             />
             <Picker.Item
-              label="9.30 AM - 11.30 AM"
-              value="9.30 AM - 11.30 AM"
-            />
-            <Picker.Item
               label="10.30 AM - 12.30 AM"
               value="10.30 AM - 12.30 AM"
             />
-            <Picker.Item
-              label="11.30 AM - 1.30 PM"
-              value="11.30 AM - 1.30 PM"
-            />
-            <Picker.Item label="2.00 PM - 4.00 PM" value="2.00 PM - 4.00 PM" />
+            <Picker.Item label="1.00 PM - 3.00 PM" value="1.00 PM - 3.00 PM" />
             <Picker.Item label="3.00 PM - 5.00 PM" value="3.00 PM - 5.00 PM" />
-            <Picker.Item label="4.00 PM - 6.00 PM" value="4.00 PM - 6.00 PM" />
             <Picker.Item label="5.00 PM - 7.00 PM" value="5.00 PM - 7.00 PM" />
-            <Picker.Item label="6.00 PM - 8.00 PM" value="6.00 PM - 8.00 PM" />
           </Picker>
 
           <Text style={styles.text}>Venue</Text>
           <TextInput
             style={styles.input}
             placeholder="Enter the Venue"
-            onChangeText={(val) => handleChangeText("venue", val)}
+            onChangeText={text => setVenue(text)}
           />
 
-          <Text style={styles.text}>Subject</Text>
+          <Text style={styles.text}>Module</Text>
           <TextInput
             style={styles.input}
-            placeholder="Enter the Subject"
-            onChangeText={(val) => handleChangeText("subject", val)}
+            placeholder="Enter the Module"
+            onChangeText={text => setModule(text)}
           />
 
           <Text style={styles.text}>Lecturer</Text>
           <TextInput
             style={styles.input}
-            placeholder="Enter the lecturer's name"
-            onChangeText={(val) => handleChangeText("lecturer", val)}
+            placeholder="Enter the Lecturer's name"
+            onChangeText={text => setLecturer(text)}
           />
           <br />
-          <Button style={styles.btn1} title="Add Class" onPress={() => add_data()} />
+          <Button
+            style={styles.btn1}
+            title="Add Class"
+            onPress={() => handleSubmit()}
+          />
           <br />
           <Button
             title="Schedule List"
@@ -164,6 +197,7 @@ export default function AddClassSchedule() {
           />
         </View>
       </View>
+      <Toast />
     </ImageBackground>
   );
 }
@@ -177,14 +211,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
   },
-  btn1:{
+  btn1: {
     height: 40,
     width: 150,
   },
-  text:{
+  text: {
     fontWeight: "bold",
     color: "yellow",
-    borderColor : "white",
+    borderColor: "white",
   },
   input: {
     height: 40,
@@ -205,5 +239,6 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     resizeMode: "cover", // stretch the image to cover the entire screen
+    tintColor: "white",
   },
 });

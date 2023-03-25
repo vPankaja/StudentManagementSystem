@@ -116,6 +116,25 @@ export default function LoginPage() {
             alignItems: "center",
             borderRadius: 7,
           }}
+          onPress={() => navigation.navigate("Login")}
+          underlayColor="#0084fffa"
+        >
+          <Text style={{ fontSize: 20, fontWeight: "bold", color: "#fff" }}>
+          Login
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <View style={{ marginHorizontal: 15 }}>
+        {/* Button */}
+        <TouchableOpacity
+          style={{
+            marginTop: 15,
+            backgroundColor: "#0D47A1",
+            height: 40,
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: 7,
+          }}
           onPress={() => navigation.navigate("User List")}
           underlayColor="#0084fffa"
         >
