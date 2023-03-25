@@ -27,7 +27,7 @@ export default function UpdateSchedule({ route }) {
     day: "",
     time: "",
     venue: "",
-    subject: "",
+    module: "",
     lecturer: "",
   };
 
@@ -55,7 +55,7 @@ export default function UpdateSchedule({ route }) {
         day: data.day,
         time: data.time,
         venue: data.venue,
-        subject: data.subject,
+        module: data.module,
         lecturer: data.lecturer,
       });
       if (updateDoc) {
@@ -137,12 +137,12 @@ export default function UpdateSchedule({ route }) {
           onChangeText={(val) => handleChangeText("venue", val)}
         />
 
-        <Text style={styles.text}>Subject</Text>
+        <Text style={styles.text}>Module</Text>
         <TextInput
           style={styles.input}
-          placeholder="Enter the Subject"
-          value={data.subject}
-          onChangeText={(val) => handleChangeText("subject", val)}
+          placeholder="Enter the Module"
+          value={data.module}
+          onChangeText={(val) => handleChangeText("module", val)}
         />
 
         <Text style={styles.text}>Lecturer</Text>
